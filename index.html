@@ -7,22 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --black:#060608;--ember:#c0392b;--ember-bright:#e74c3c;
-  --gold:#c9940f;--gold-light:#efc050;--silver:#a8b8c8;
-  --white:#f2ede6;--muted:#555568;
+  --black:#0f0f13;--ember:#c0392b;--ember-bright:#e74c3c;
+  --gold:#c9940f;--gold-light:#efc050;--silver:#c4d4e4;
+  --white:#f6f2ed;--muted:#8a8aa8;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--black);color:var(--white);font-family:'Crimson Pro',Georgia,serif;overflow-x:hidden}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(6,6,8,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,148,15,.18)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(15,15,19,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,148,15,.18)}
 .nav-logo{font-family:'Cinzel',serif;font-weight:900;font-size:1.05rem;letter-spacing:.18em;color:var(--gold);text-decoration:none}
 .nav-links{display:flex;gap:2.2rem;list-style:none}
 .nav-links a{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;color:var(--silver);text-decoration:none;text-transform:uppercase;transition:color .2s}
 .nav-links a:hover{color:var(--gold-light)}
 .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
 .hamburger span{display:block;width:22px;height:1.5px;background:var(--silver)}
-.mob-nav{display:none;position:fixed;inset:60px 0 0 0;z-index:199;background:rgba(6,6,8,.98);flex-direction:column;padding:2rem;border-top:1px solid rgba(201,148,15,.12);overflow-y:auto}
+.mob-nav{display:none;position:fixed;inset:60px 0 0 0;z-index:199;background:rgba(15,15,19,.98);flex-direction:column;padding:2rem;border-top:1px solid rgba(201,148,15,.12);overflow-y:auto}
 .mob-nav.open{display:flex}
 .mob-nav a{font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.15em;color:var(--silver);text-decoration:none;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.05);text-transform:uppercase}
 
@@ -152,6 +152,8 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
     <li><a href="battle-division.html">Battle Division</a></li>
     <li><a href="emberforge.html">Emberforge</a></li>
     <li><a href="cabinet.html">The Cabinet</a></li>
+    <li><a href="players.html">Players</a></li>
+    <li><a href="head-to-head.html">Head to Head</a></li>
     <li><a href="hall-of-champions.html">Hall of Champions</a></li>
   </ul>
   <button class="hamburger" onclick="document.getElementById('mob').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -160,6 +162,8 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
   <a href="battle-division.html">⚔ Battle Division</a>
   <a href="emberforge.html">🔥 Emberforge</a>
   <a href="cabinet.html">🏛 The Cabinet</a>
+  <a href="players.html">👤 Players</a>
+  <a href="head-to-head.html">⚔ Head to Head</a>
   <a href="hall-of-champions.html">🏆 Hall of Champions</a>
 </nav>
 
