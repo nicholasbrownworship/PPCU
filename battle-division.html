@@ -6,193 +6,121 @@
 <title>Battle Division — PPCU</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black: #060608;
-  --ember: #c0392b;
-  --ember-bright: #e74c3c;
-  --ember-deep: #6b1a13;
-  --gold: #c9940f;
-  --gold-light: #efc050;
-  --silver: #a8b8c8;
-  --white: #f2ede6;
-  --muted: #555568;
-  --accent: var(--ember-bright);
-  --accent-dim: rgba(192,57,43,0.22);
-}
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { background: var(--black); color: var(--white); font-family: 'Crimson Pro', Georgia, serif; overflow-x: hidden; }
-
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 2.5rem;
-  background: rgba(6,6,8,0.95); backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(192,57,43,0.2);
-}
-.nav-logo { font-family: 'Cinzel', serif; font-weight: 900; font-size: 1.05rem; letter-spacing: 0.18em; color: var(--ember-bright); text-decoration: none; }
-.nav-links { display: flex; gap: 2.2rem; list-style: none; }
-.nav-links a { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.18em; color: var(--silver); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
-.nav-links a:hover, .nav-links a.cur { color: var(--ember-bright); }
-.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
-.hamburger span { display: block; width: 22px; height: 1.5px; background: var(--silver); }
-.mob-nav { display: none; position: fixed; inset: 60px 0 0 0; z-index: 199; background: rgba(6,6,8,0.98); flex-direction: column; padding: 2rem; border-top: 1px solid rgba(192,57,43,0.15); overflow-y: auto; }
-.mob-nav.open { display: flex; }
-.mob-nav a { font-family: 'Cinzel', serif; font-size: 0.9rem; letter-spacing: 0.15em; color: var(--silver); text-decoration: none; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; }
-
-/* PAGE HEADER */
-.pg-header {
-  min-height: 58vh; display: flex; flex-direction: column;
-  justify-content: flex-end; padding: 8rem 3rem 4rem;
-  position: relative; overflow: hidden;
-}
-.ph-bg {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(192,57,43,0.28) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 90% 50%, rgba(192,57,43,0.1) 0%, transparent 50%),
-    linear-gradient(180deg, #18080a 0%, var(--black) 100%);
-}
-.ph-lines {
-  position: absolute; inset: 0;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(192,57,43,0.06) 60px);
-}
-.pg-eyebrow { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.42em; color: var(--ember-bright); text-transform: uppercase; position: relative; z-index: 1; margin-bottom: 0.8rem; }
-.pg-title { font-family: 'Cinzel', serif; font-size: clamp(3rem, 9vw, 7.5rem); font-weight: 900; line-height: 0.88; color: var(--white); position: relative; z-index: 1; }
-.pg-title em { font-style: normal; background: linear-gradient(135deg, var(--ember-bright), var(--ember-deep)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.pg-desc { font-size: 1.08rem; font-style: italic; color: var(--silver); margin-top: 1.3rem; max-width: 520px; line-height: 1.6; position: relative; z-index: 1; }
-
-/* CONTENT */
-.content { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
-
-/* QUICK STATS */
-.qs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.12); margin-bottom: 5rem; }
-.qs-box { padding: 2rem 1.8rem; background: rgba(20,8,8,0.7); }
-.qs-label { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.28em; color: var(--ember-bright); text-transform: uppercase; margin-bottom: 0.5rem; }
-.qs-val { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; color: var(--white); }
-.qs-note { font-size: 0.78rem; font-style: italic; color: var(--muted); margin-top: 0.3rem; }
-
-/* SECTION HEADER */
-.s-hdr { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 1.8rem; padding-bottom: 0.9rem; border-bottom: 1px solid rgba(192,57,43,0.22); }
-.s-hdr h2 { font-family: 'Cinzel', serif; font-size: 1.45rem; font-weight: 700; color: var(--white); }
-.s-tag { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.26em; color: var(--ember-bright); text-transform: uppercase; }
-
-/* STANDINGS TABLE */
-.tbl { width: 100%; border-collapse: collapse; margin-bottom: 5rem; }
-.tbl th { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--ember-bright); text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid rgba(192,57,43,0.28); }
-.tbl th:nth-child(n+3) { text-align: center; }
-.tbl td { padding: 0.95rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
-.tbl td:nth-child(n+3) { text-align: center; }
-.tbl tr:hover td { background: rgba(192,57,43,0.04); }
-.td-rank { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--muted); width: 50px; }
-.td-rank.gold { color: var(--gold); }
-.td-name { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 700; color: var(--white); }
-.td-stat { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; color: var(--silver); }
-.td-stat.hi { color: var(--ember-bright); }
-.chip { display: inline-block; font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.1em; padding: 0.2rem 0.65rem; border: 1px solid rgba(192,57,43,0.3); color: var(--muted); }
-
-/* MATCHUPS */
-.matchups { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.4rem; margin-bottom: 5rem; }
-.match-card { border: 1px solid rgba(192,57,43,0.2); background: linear-gradient(145deg, #180a0a, #0d0404); padding: 1.8rem; position: relative; overflow: hidden; }
-.match-card::before { content: 'VS'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', sans-serif; font-size: 4.5rem; color: rgba(192,57,43,0.05); pointer-events: none; }
-.match-eyebrow { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.26em; color: var(--ember-bright); text-transform: uppercase; margin-bottom: 1rem; }
-.fighters { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; }
-.fighter { text-align: center; flex: 1; }
-.f-name { font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
-.f-score { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; line-height: 1; color: var(--ember-bright); }
-.vs { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; color: var(--ember-deep); letter-spacing: 0.08em; }
-.match-foot { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-.badge { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.14em; padding: 0.22rem 0.65rem; text-transform: uppercase; border: 1px solid; }
-.badge-upcoming { border-color: rgba(201,148,15,0.35); color: var(--gold-light); }
-.badge-pending { border-color: rgba(192,57,43,0.3); color: var(--muted); }
-.match-date { font-size: 0.75rem; font-style: italic; color: var(--muted); }
-
-/* FOOTER */
-footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
-.f-nav { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
-.f-nav a { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.2em; color: var(--muted); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
-.f-nav a:hover { color: var(--ember-bright); }
-.f-copy { font-size: 0.78rem; color: var(--muted); }
-
-@media (max-width: 760px) {
-  nav { padding: 1rem 1.5rem; } .nav-links { display: none; } .hamburger { display: flex; }
-  .pg-header { padding: 7rem 1.5rem 3rem; min-height: 45vh; }
-  .content { padding: 3.5rem 1.5rem; }
-  .matchups { grid-template-columns: 1fr; }
-  .tbl th:nth-child(n+5), .tbl td:nth-child(n+5) { display: none; }
-}
+:root{--black:#060608;--ember:#c0392b;--ember-bright:#e74c3c;--ember-deep:#6b1a13;--gold:#c9940f;--gold-light:#efc050;--silver:#a8b8c8;--white:#f2ede6;--muted:#555568;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'Crimson Pro',Georgia,serif;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(6,6,8,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(192,57,43,.2)}
+.nav-logo{font-family:'Cinzel',serif;font-weight:900;font-size:1.05rem;letter-spacing:.18em;color:var(--ember-bright);text-decoration:none}
+.nav-links{display:flex;gap:2.2rem;list-style:none}
+.nav-links a{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;color:var(--silver);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover,.nav-links a.cur{color:var(--ember-bright)}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--silver)}
+.mob-nav{display:none;position:fixed;inset:60px 0 0 0;z-index:199;background:rgba(6,6,8,.98);flex-direction:column;padding:2rem;border-top:1px solid rgba(192,57,43,.15);overflow-y:auto}
+.mob-nav.open{display:flex}
+.mob-nav a{font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.15em;color:var(--silver);text-decoration:none;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.05);text-transform:uppercase}
+.pg-header{min-height:52vh;display:flex;flex-direction:column;justify-content:flex-end;padding:8rem 3rem 4rem;position:relative;overflow:hidden}
+.ph-bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 0%,rgba(192,57,43,.28) 0%,transparent 60%),linear-gradient(180deg,#18080a 0%,var(--black) 100%)}
+.ph-lines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(192,57,43,.06) 60px)}
+.pg-eyebrow{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.42em;color:var(--ember-bright);text-transform:uppercase;position:relative;z-index:1;margin-bottom:.8rem}
+.pg-title{font-family:'Cinzel',serif;font-size:clamp(3rem,9vw,7.5rem);font-weight:900;line-height:.88;color:var(--white);position:relative;z-index:1}
+.pg-title em{font-style:normal;background:linear-gradient(135deg,var(--ember-bright),var(--ember-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pg-desc{font-size:1.08rem;font-style:italic;color:var(--silver);margin-top:1.3rem;max-width:520px;line-height:1.6;position:relative;z-index:1}
+.content{max-width:1100px;margin:0 auto;padding:5rem 2rem}
+.qs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.12);margin-bottom:5rem}
+.qs-box{padding:2rem 1.8rem;background:rgba(20,8,8,.7)}
+.qs-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.28em;color:var(--ember-bright);text-transform:uppercase;margin-bottom:.5rem}
+.qs-val{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--white)}
+.qs-note{font-size:.78rem;font-style:italic;color:var(--muted);margin-top:.3rem}
+.s-hdr{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:1.8rem;padding-bottom:.9rem;border-bottom:1px solid rgba(192,57,43,.22)}
+.s-hdr h2{font-family:'Cinzel',serif;font-size:1.45rem;font-weight:700;color:var(--white)}
+.s-tag{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.26em;color:var(--ember-bright);text-transform:uppercase}
+.tbl{width:100%;border-collapse:collapse;margin-bottom:5rem}
+.tbl th{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;color:var(--ember-bright);text-transform:uppercase;padding:.75rem 1rem;text-align:left;border-bottom:1px solid rgba(192,57,43,.28)}
+.tbl th:nth-child(n+3){text-align:center}
+.tbl td{padding:.95rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.tbl td:nth-child(n+3){text-align:center}
+.tbl tr:hover td{background:rgba(192,57,43,.04)}
+.td-rank{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--muted);width:50px}
+.td-rank.gold{color:var(--gold)}
+.td-name{font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;color:var(--white)}
+.td-name a{color:inherit;text-decoration:none;transition:color .2s}
+.td-name a:hover{color:var(--gold-light)}
+.td-stat{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--silver)}
+.td-stat.hi{color:var(--ember-bright)}
+.chip{display:inline-block;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;padding:.2rem .65rem;border:1px solid rgba(192,57,43,.3);color:var(--muted)}
+.matchups{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;margin-bottom:5rem}
+.match-card{border:1px solid rgba(192,57,43,.2);background:linear-gradient(145deg,#180a0a,#0d0404);padding:1.8rem;position:relative;overflow:hidden}
+.match-card::before{content:'VS';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:4.5rem;color:rgba(192,57,43,.05);pointer-events:none}
+.match-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.26em;color:var(--ember-bright);text-transform:uppercase;margin-bottom:1rem}
+.fighters{display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+.fighter{text-align:center;flex:1}
+.f-name{font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
+.f-name a{color:inherit;text-decoration:none;transition:color .2s}
+.f-name a:hover{color:var(--gold-light)}
+.f-score{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1}
+.vs{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--ember-deep);letter-spacing:.08em}
+.match-foot{margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center}
+.badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;padding:.22rem .65rem;text-transform:uppercase;border:1px solid}
+.badge-win{border-color:rgba(92,184,92,.4);color:#5cb85c}
+.match-date{font-size:.75rem;font-style:italic;color:var(--muted)}
+.empty{padding:2.5rem;text-align:center;font-style:italic;color:var(--muted)}
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,.05)}
+.f-nav{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.f-nav a{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.f-nav a:hover{color:var(--ember-bright)}
+.f-copy{font-size:.78rem;color:var(--muted)}
+@media(max-width:760px){nav{padding:1rem 1.5rem}.nav-links{display:none}.hamburger{display:flex}.pg-header{padding:7rem 1.5rem 3rem;min-height:40vh}.content{padding:3.5rem 1.5rem}.matchups{grid-template-columns:1fr}.tbl th:nth-child(n+5),.tbl td:nth-child(n+5){display:none}}
 </style>
 </head>
 <body>
-
 <nav>
   <a class="nav-logo" href="index.html">PPCU</a>
   <ul class="nav-links">
     <li><a href="battle-division.html" class="cur">Battle Division</a></li>
-    <li><a href="emberforge.html">Emberforge</a></li>
     <li><a href="cabinet.html">The Cabinet</a></li>
+    <li><a href="emberforge.html">Emberforge</a></li>
+    <li><a href="players.html">Players</a></li>
     <li><a href="hall-of-champions.html">Hall of Champions</a></li>
   </ul>
   <button class="hamburger" onclick="document.getElementById('mob').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 <nav class="mob-nav" id="mob">
-  <a href="index.html">🏠 Home</a>
-  <a href="battle-division.html">⚔ Battle Division</a>
-  <a href="emberforge.html">🔥 Emberforge</a>
-  <a href="cabinet.html">🏛 The Cabinet</a>
-  <a href="hall-of-champions.html">🏆 Hall of Champions</a>
+  <a href="index.html">🏠 Home</a><a href="battle-division.html">⚔ Battle Division</a>
+  <a href="cabinet.html">🎲 The Cabinet</a><a href="emberforge.html">🔥 Emberforge</a>
+  <a href="players.html">👤 Players</a><a href="hall-of-champions.html">🏆 Hall of Champions</a>
 </nav>
 
 <header class="pg-header">
-  <div class="ph-bg"></div>
-  <div class="ph-lines"></div>
-  <p class="pg-eyebrow">PPCU — Division I</p>
+  <div class="ph-bg"></div><div class="ph-lines"></div>
+  <p class="pg-eyebrow">PPCU — Tabletop Miniatures</p>
   <h1 class="pg-title"><em>Battle</em> Division</h1>
-  <p class="pg-desc">Combat standings, match results, and the eternal hierarchy of pain.</p>
+  <p class="pg-desc">40k. Legion. Shatterpoint. MESBG. Head-to-head. No mercy.</p>
 </header>
 
 <div class="content">
-
-  <!-- QUICK STATS -->
   <div class="qs-grid">
     <div class="qs-box"><div class="qs-label">Matches Played</div><div class="qs-val" id="qs-matches">—</div><div class="qs-note">All-time total</div></div>
-    <div class="qs-box"><div class="qs-label">Unique Games</div><div class="qs-val" id="qs-games">—</div><div class="qs-note">Different games played</div></div>
+    <div class="qs-box"><div class="qs-label">Game Systems</div><div class="qs-val" id="qs-games">—</div><div class="qs-note">Different systems</div></div>
     <div class="qs-box"><div class="qs-label">Current Leader</div><div class="qs-val" id="qs-leader">—</div><div class="qs-note">By win points</div></div>
     <div class="qs-box"><div class="qs-label">Leader Streak</div><div class="qs-val" id="qs-streak">—</div><div class="qs-note">Consecutive wins</div></div>
   </div>
 
-  <!-- STANDINGS -->
   <div class="s-hdr"><h2>Combat Standings</h2><span class="s-tag">Current Rankings</span></div>
   <table class="tbl">
-    <thead>
-      <tr>
-        <th>#</th><th>Warrior</th><th>W</th><th>L</th><th>Win%</th><th>Pts</th><th>Streak</th>
-      </tr>
-    </thead>
-    <tbody id="standings-body">
-      <tr><td class="td-rank gold">1</td><td class="td-name">Nick Brown</td><td class="td-stat hi">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-      <tr><td class="td-rank gold">2</td><td class="td-name">Katelyn Brown</td><td class="td-stat hi">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-      <tr><td class="td-rank gold">3</td><td class="td-name">Josh Burchfield</td><td class="td-stat hi">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-      <tr><td class="td-rank">4</td><td class="td-name">Josh Brown</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-      <tr><td class="td-rank">5</td><td class="td-name">Corey Jackson</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-      <tr><td class="td-rank">6</td><td class="td-name">Spencer Hinrichs</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-      <tr><td class="td-rank">7</td><td class="td-name">Carson Hinrichs</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">TBD</span></td></tr>
-    </tbody>
+    <thead><tr><th>#</th><th>Warrior</th><th>W</th><th>L</th><th>Win%</th><th>Pts</th><th>Streak</th></tr></thead>
+    <tbody id="standings-body"><tr><td colspan="7" style="text-align:center;padding:2rem;font-style:italic;color:var(--muted)">Loading…</td></tr></tbody>
   </table>
 
-  <!-- MATCHUPS -->
   <div class="s-hdr"><h2>Match Log</h2><span class="s-tag">All Results</span></div>
-  <div class="matchups" id="match-log">
-    <div class="match-card" style="text-align:center;padding:3rem"><p style="font-style:italic;color:#555568">Loading match history…</p></div>
-  </div>
-
+  <div class="matchups" id="match-log"><div class="empty">Loading…</div></div>
 </div>
 
 <footer>
   <div class="f-nav">
-    <a href="index.html">Home</a>
-    <a href="emberforge.html">Emberforge</a>
-    <a href="cabinet.html">The Cabinet</a>
+    <a href="index.html">Home</a><a href="cabinet.html">The Cabinet</a>
+    <a href="emberforge.html">Emberforge</a><a href="players.html">Players</a>
     <a href="hall-of-champions.html">Hall of Champions</a>
   </div>
   <p class="f-copy">© PPCU Battle Division — Stats are placeholders. Glory is not.</p>
@@ -201,42 +129,40 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
 <script src="config.js"></script>
 <script src="ppcu-data.js"></script>
 <script>
+const SLUGS={"Nick Brown":"nick-brown","Katelyn Brown":"katelyn-brown","Josh Burchfield":"josh-burchfield","Josh Brown":"josh-brown","Corey Jackson":"corey-jackson","Spencer Hinrichs":"spencer-hinrichs","Carson Hinrichs":"carson-hinrichs"};
+function playerLink(name){const s=SLUGS[name];return s?`<a href="players/${s}.html">${name}</a>`:name;}
+
 async function init(){
   const results=await PPCUData.fetchResults();
   const standings=PPCUData.buildStandings(results);
 
-  // Update quick stats
   document.getElementById('qs-matches').textContent=results.length||'0';
+  document.getElementById('qs-games').textContent=new Set(results.map(r=>r.game)).size||'0';
   if(standings.length>0&&standings[0].w>0){
     document.getElementById('qs-leader').textContent=standings[0].name.split(' ')[0];
-    document.getElementById('qs-streak').textContent=standings[0].streak>0?standings[0].streak+'':' —';
+    document.getElementById('qs-streak').textContent=standings[0].streak||'—';
   }
-  const gameSet=new Set(results.map(r=>r.game));
-  document.getElementById('qs-games').textContent=gameSet.size||'0';
 
-  // Standings table
   const tbody=document.getElementById('standings-body');
   if(standings.every(p=>p.w+p.l===0)){
-    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;font-style:italic;color:var(--muted)">No results recorded yet</td></tr>';
-  } else {
-    tbody.innerHTML=standings.map((p,i)=>`
-      <tr>
-        <td class="td-rank ${i<3?'gold':''}">${i+1}</td>
-        <td class="td-name">${p.name}</td>
-        <td class="td-stat hi">${p.w}</td>
-        <td class="td-stat">${p.l}</td>
-        <td class="td-stat">${PPCUData.winPct(p.w,p.l)}</td>
-        <td class="td-stat">${p.pts}</td>
-        <td><span class="chip" style="${p.streakType==='W'?'border-color:rgba(92,184,92,.4);color:#5cb85c':p.streakType==='L'?'border-color:rgba(192,57,43,.4);color:var(--ember-bright)':''}">${PPCUData.formatStreak(p.streak,p.streakType)||'—'}</span></td>
-      </tr>`).join('');
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;font-style:italic;color:var(--muted)">No results yet</td></tr>';
+  }else{
+    tbody.innerHTML=standings.map((p,i)=>`<tr>
+      <td class="td-rank ${i<3?'gold':''}">${i+1}</td>
+      <td class="td-name">${playerLink(p.name)}</td>
+      <td class="td-stat hi">${p.w}</td>
+      <td class="td-stat">${p.l}</td>
+      <td class="td-stat">${PPCUData.winPct(p.w,p.w+p.l)}</td>
+      <td class="td-stat">${p.pts}</td>
+      <td><span class="chip" style="${p.streakType==='W'?'border-color:rgba(92,184,92,.4);color:#5cb85c':p.streakType==='L'?'border-color:rgba(192,57,43,.4);color:var(--ember-bright)':''}">${PPCUData.formatStreak(p.streak,p.streakType)||'—'}</span></td>
+    </tr>`).join('');
   }
 
-  // Match log
   const matchLog=document.getElementById('match-log');
   const recent=PPCUData.recentResults(results,12);
   if(recent.length===0){
-    matchLog.innerHTML='<div class="match-card" style="text-align:center;padding:3rem"><p style="font-style:italic;color:var(--muted)">No matches recorded yet. Season is about to begin.</p></div>';
-  } else {
+    matchLog.innerHTML='<div class="empty">No matches recorded yet. Season awaits.</div>';
+  }else{
     matchLog.innerHTML=recent.map(r=>{
       const loser=r.winner===r.player1?r.player2:r.player1;
       const ws=r.winner===r.player1?r.p1score:r.p2score;
@@ -244,11 +170,11 @@ async function init(){
       return `<div class="match-card">
         <div class="match-eyebrow">⚔ ${r.game}</div>
         <div class="fighters">
-          <div class="fighter"><div class="f-name">${r.winner}</div><div class="f-score" style="color:var(--gold-light)">${ws}</div></div>
+          <div class="fighter"><div class="f-name">${playerLink(r.winner)}</div><div class="f-score" style="color:var(--gold-light)">${ws}</div></div>
           <div class="vs">VS</div>
-          <div class="fighter"><div class="f-name">${loser}</div><div class="f-score" style="color:var(--muted)">${ls}</div></div>
+          <div class="fighter"><div class="f-name">${playerLink(loser)}</div><div class="f-score" style="color:var(--muted)">${ls}</div></div>
         </div>
-        <div class="match-foot"><span class="badge badge-upcoming" style="border-color:rgba(92,184,92,.4);color:#5cb85c">✓ Complete</span><span class="match-date">${r.date}</span></div>
+        <div class="match-foot"><span class="badge badge-win">✓ Complete</span><span class="match-date">${r.date}</span></div>
       </div>`;
     }).join('');
   }
