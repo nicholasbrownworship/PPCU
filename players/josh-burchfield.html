@@ -179,6 +179,8 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
 <script src="../config.js"></script>
 <script src="../ppcu-data.js"></script>
 <script>
+const SLUGS={"Nick Brown":"nick-brown","Katelyn Brown":"katelyn-brown","Josh Burchfield":"josh-burchfield","Josh Brown":"josh-brown","Corey Jackson":"corey-jackson","Spencer Hinrichs":"spencer-hinrichs","Carson Hinrichs":"carson-hinrichs"};
+function playerLink(name,isSelf){const s=SLUGS[name];if(isSelf)return `<span style="color:var(--gold-light)">${name}</span>`;return s?`<a href="../players/${s}.html" style="color:inherit;text-decoration:none" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color=''">${name}</a>`:name;}
 const PLAYER_NAME = "Josh Burchfield";
 
 async function init() {
@@ -212,7 +214,7 @@ async function init() {
       return `<div class="match-row">
         <span class="mr-date">${r.date}</span>
         <span class="mr-game">${r.game}</span>
-        <span class="mr-opp">${opp}</span>
+        <span class="mr-opp">${playerLink(opp)}</span>
         <span class="mr-score">${myScore}–${oppScore}</span>
         <span class="mr-result ${isWin?'mr-w':'mr-l'}">${isWin?'WIN':'LOSS'}</span>
       </div>`;
