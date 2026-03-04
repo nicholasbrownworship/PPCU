@@ -194,10 +194,10 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
 <div class="content">
 
   <div class="qs-grid">
-    <div class="qs-box"><div class="qs-label">All-Time Champion</div><div class="qs-val">—</div><div class="qs-note">Placeholder</div></div>
-    <div class="qs-box"><div class="qs-label">Records Set</div><div class="qs-val">—</div><div class="qs-note">Placeholder</div></div>
-    <div class="qs-box"><div class="qs-label">Perfect Sessions</div><div class="qs-val">—</div><div class="qs-note">Placeholder</div></div>
-    <div class="qs-box"><div class="qs-label">Seasons Played</div><div class="qs-val">—</div><div class="qs-note">Placeholder</div></div>
+    <div class="qs-box"><div class="qs-label">All-Time Leader</div><div class="qs-val" id="qs-leader">—</div><div class="qs-note">Most wins</div></div>
+    <div class="qs-box"><div class="qs-label">Total Matches</div><div class="qs-val" id="qs-matches">—</div><div class="qs-note">All-time</div></div>
+    <div class="qs-box"><div class="qs-label">Highest Win%</div><div class="qs-val" id="qs-pct">—</div><div class="qs-note">Min 3 matches</div></div>
+    <div class="qs-box"><div class="qs-label">Longest Streak</div><div class="qs-val" id="qs-streak">—</div><div class="qs-note">All-time record</div></div>
   </div>
 
   <div class="s-hdr"><h2>Champions Podium</h2><span class="s-tag">All-Time Leaders</span></div>
@@ -206,20 +206,20 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
       <div class="podium-slot p2">
         <div class="podium-crown">🥈</div>
         <div class="podium-num">2</div>
-        <div class="podium-name">— TBD —</div>
-        <div class="podium-stat">Placeholder stat</div>
+        <div class="podium-name" id="pod-2">— TBD —</div>
+        <div class="podium-stat" id="pod-2-stat">—</div>
       </div>
       <div class="podium-slot p1">
         <div class="podium-crown">👑</div>
         <div class="podium-num">1</div>
-        <div class="podium-name">— TBD —</div>
-        <div class="podium-stat">Placeholder stat</div>
+        <div class="podium-name" id="pod-1">— TBD —</div>
+        <div class="podium-stat" id="pod-1-stat">—</div>
       </div>
       <div class="podium-slot p3">
         <div class="podium-crown">🥉</div>
         <div class="podium-num">3</div>
-        <div class="podium-name">— TBD —</div>
-        <div class="podium-stat">Placeholder stat</div>
+        <div class="podium-name" id="pod-3">— TBD —</div>
+        <div class="podium-stat" id="pod-3-stat">—</div>
       </div>
     </div>
   </div>
@@ -255,13 +255,7 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
       <tr><th>#</th><th>Warrior</th><th>Titles</th><th>Best Finish</th><th>Records</th><th>Status</th></tr>
     </thead>
     <tbody>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);width:50px">—</td><td class="td-name">Nick Brown</td><td class="td-stat hi">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);width:50px">—</td><td class="td-name">Katelyn Brown</td><td class="td-stat hi">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--muted);width:50px">—</td><td class="td-name">Josh Burchfield</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--muted);width:50px">—</td><td class="td-name">Josh Brown</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--muted);width:50px">—</td><td class="td-name">Corey Jackson</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--muted);width:50px">—</td><td class="td-name">Spencer Hinrichs</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
-      <tr><td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--muted);width:50px">—</td><td class="td-name">Carson Hinrichs</td><td class="td-stat">—</td><td class="td-stat">—</td><td class="td-stat">—</td><td><span class="chip">Active</span></td></tr>
+      <tbody id="warriors-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;font-style:italic;color:#555568">Loading…</td></tr></tbody>
     </tbody>
   </table>
 
@@ -277,5 +271,61 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
   <p class="f-copy">© PPCU Hall of Champions — The legends are still being written.</p>
 </footer>
 
+
+<script src="config.js"></script>
+<script src="ppcu-data.js"></script>
+<script>
+async function init(){
+  const results = await PPCUData.fetchResults();
+  const standings = PPCUData.buildStandings(results);
+
+  // Quick stats
+  document.getElementById('qs-matches').textContent = results.length || '0';
+  if(standings.length > 0 && standings[0].w > 0){
+    document.getElementById('qs-leader').textContent = standings[0].name.split(' ')[0];
+  }
+  // Best win pct (min 3 matches)
+  const qualified = standings.filter(p => p.w + p.l >= 3);
+  if(qualified.length > 0){
+    const best = qualified[0];
+    document.getElementById('qs-pct').textContent = PPCUData.winPct(best.w, best.l);
+  }
+  // Longest streak (all-time, scan all players)
+  let maxStreak = 0;
+  standings.forEach(p => { if(p.streak > maxStreak) maxStreak = p.streak; });
+  document.getElementById('qs-streak').textContent = maxStreak || '—';
+
+  // Podium
+  if(standings.length >= 1 && standings[0].w > 0){
+    document.getElementById('pod-1').textContent = standings[0].name;
+    document.getElementById('pod-1-stat').textContent = standings[0].w + 'W – ' + standings[0].l + 'L';
+  }
+  if(standings.length >= 2 && standings[1].w > 0){
+    document.getElementById('pod-2').textContent = standings[1].name;
+    document.getElementById('pod-2-stat').textContent = standings[1].w + 'W – ' + standings[1].l + 'L';
+  }
+  if(standings.length >= 3 && standings[2].w > 0){
+    document.getElementById('pod-3').textContent = standings[2].name;
+    document.getElementById('pod-3-stat').textContent = standings[2].w + 'W – ' + standings[2].l + 'L';
+  }
+
+  // Warriors table
+  const tbody = document.getElementById('warriors-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = standings.map((p, i) => {
+    const allGames = results.filter(r => r.player1 === p.name || r.player2 === p.name);
+    const bestGame = PPCUData.mostPlayedGame(allGames.map(r => ({game: r.game})));
+    return \`<tr>
+      <td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:\${i<3?'var(--gold)':'var(--muted)'};width:50px">\${i+1}</td>
+      <td class="td-name">\${p.name}</td>
+      <td class="td-stat hi">\${p.w}</td>
+      <td class="td-stat">\${p.l}</td>
+      <td class="td-stat">\${PPCUData.winPct(p.w, p.l)}</td>
+      <td><span class="chip">\${PPCUData.formatStreak(p.streak, p.streakType) || 'Active'}</span></td>
+    </tr>\`;
+  }).join('');
+}
+init();
+</script>
 </body>
 </html>
