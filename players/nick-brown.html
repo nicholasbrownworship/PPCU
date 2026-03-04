@@ -7,22 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 :root{
-  --black:#060608;--ember:#c0392b;--ember-bright:#e74c3c;
-  --gold:#c9940f;--gold-light:#efc050;--silver:#a8b8c8;
-  --white:#f2ede6;--muted:#555568;
+  --black:#0f0f13;--ember:#c0392b;--ember-bright:#e74c3c;
+  --gold:#c9940f;--gold-light:#efc050;--silver:#c4d4e4;
+  --white:#f6f2ed;--muted:#8a8aa8;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--black);color:var(--white);font-family:'Crimson Pro',Georgia,serif;overflow-x:hidden}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(6,6,8,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,148,15,.18)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(15,15,19,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,148,15,.18)}
 .nav-logo{font-family:'Cinzel',serif;font-weight:900;font-size:1.05rem;letter-spacing:.18em;color:var(--gold);text-decoration:none}
 .nav-links{display:flex;gap:2.2rem;list-style:none}
 .nav-links a{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;color:var(--silver);text-decoration:none;text-transform:uppercase;transition:color .2s}
 .nav-links a:hover,.nav-links a.cur{color:var(--gold-light)}
 .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
 .hamburger span{display:block;width:22px;height:1.5px;background:var(--silver)}
-.mob-nav{display:none;position:fixed;inset:60px 0 0 0;z-index:199;background:rgba(6,6,8,.98);flex-direction:column;padding:2rem;border-top:1px solid rgba(201,148,15,.12);overflow-y:auto}
+.mob-nav{display:none;position:fixed;inset:60px 0 0 0;z-index:199;background:rgba(15,15,19,.98);flex-direction:column;padding:2rem;border-top:1px solid rgba(201,148,15,.12);overflow-y:auto}
 .mob-nav.open{display:flex}
 .mob-nav a{font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.15em;color:var(--silver);text-decoration:none;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.05);text-transform:uppercase}
 
@@ -123,6 +123,22 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
 .fact-value{font-family:'Cinzel',serif;font-size:.88rem;color:var(--white)}
 .fact-value.placeholder{color:var(--muted);font-style:italic}
 
+
+/* ACHIEVEMENTS */
+.achievements-section{margin-bottom:4rem}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem}
+.badge{display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;border:1px solid rgba(201,148,15,.15);background:rgba(201,148,15,.03);position:relative;overflow:hidden;transition:all .2s}
+.badge.earned{border-color:rgba(201,148,15,.35);background:rgba(201,148,15,.07)}
+.badge.earned::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--gold)}
+.badge.locked{opacity:.35;filter:grayscale(1)}
+.badge-icon{font-size:1.5rem;flex-shrink:0;width:32px;text-align:center}
+.badge-info{flex:1;min-width:0}
+.badge-name{font-family:'Cinzel',serif;font-size:.68rem;font-weight:700;color:var(--white);margin-bottom:.15rem}
+.badge.locked .badge-name{color:var(--muted)}
+.badge-desc{font-size:.72rem;color:var(--muted);line-height:1.35}
+.badge.earned .badge-desc{color:var(--silver)}
+.badge-count{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.14em;color:var(--gold);margin-top:.8rem}
+
 </style>
 </head>
 <body>
@@ -144,6 +160,7 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
   <a href="../cabinet.html">🎲 The Cabinet</a>
   <a href="../emberforge.html">🔥 Emberforge</a>
   <a href="../players.html">👤 Players</a>
+  <a href="../head-to-head.html">⚔ Head to Head</a>
   <a href="../hall-of-champions.html">🏆 Hall of Champions</a>
 </nav>
 
@@ -322,6 +339,144 @@ async function init() {
     var ht = document.querySelector('.hero-title');
     if (ht) ht.textContent = _meta.nickname + ' · ' + _meta.title;
   }
+
+
+  // ── Achievements ────────────────────────────────────────────
+  (function buildBadges() {
+    const myMini  = results.filter(r => r.player1 === PLAYER_NAME || r.player2 === PLAYER_NAME);
+    const myWins  = myMini.filter(r => r.winner === PLAYER_NAME);
+    const myLoss  = myMini.filter(r => r.winner !== PLAYER_NAME);
+    const myBG    = bgResults.filter(r => r.players.some(p => p.name === PLAYER_NAME));
+    const myBGWin = myBG.filter(r => r.winner === PLAYER_NAME);
+
+    // Sort results chronologically for streak detection
+    const chronoMini = [...myMini].sort((a,b) => new Date(a.date)-new Date(b.date));
+    const outcomes = chronoMini.map(r => r.winner === PLAYER_NAME ? 'W' : 'L');
+
+    // Current streak
+    let curStreak = 0, curType = null;
+    for (let i = outcomes.length-1; i >= 0; i--) {
+      if (!curType) curType = outcomes[i];
+      if (outcomes[i] === curType) curStreak++; else break;
+    }
+
+    // Longest ever win streak
+    let maxWinStreak = 0, run = 0;
+    outcomes.forEach(o => { if(o==='W'){run++;if(run>maxWinStreak)maxWinStreak=run;}else{run=0;} });
+
+    // Win%
+    const winPct = myMini.length > 0 ? myWins.length / myMini.length : 0;
+
+    // Biggest margin win
+    let biggestMargin = 0;
+    myWins.forEach(r => {
+      const ws = parseInt(r.winner===r.player1?r.p1score:r.p2score)||0;
+      const ls = parseInt(r.winner===r.player1?r.p2score:r.p1score)||0;
+      if(ws-ls > biggestMargin) biggestMargin = ws-ls;
+    });
+
+    // All-time mini standings for rank
+    const allMiniStandings = PPCUData.buildStandings(results);
+    const myRank = allMiniStandings.findIndex(p=>p.name===PLAYER_NAME)+1;
+    const leader = allMiniStandings[0];
+
+    // Giant slayer — beat the #1 player
+    const beatLeader = leader && leader.name !== PLAYER_NAME &&
+      results.some(r => r.winner===PLAYER_NAME &&
+        (r.player1===leader.name||r.player2===leader.name));
+
+    // Nemesis — beat same opponent 3+ times
+    const oppWinCounts = {};
+    myWins.forEach(r => {
+      const opp = r.player1===PLAYER_NAME?r.player2:r.player1;
+      oppWinCounts[opp] = (oppWinCounts[opp]||0)+1;
+    });
+    const hasNemesis = Object.values(oppWinCounts).some(v=>v>=3);
+
+    // Board game stats
+    const allBGStandings = PPCUData.buildBoardGameStandings(bgResults);
+    const myBGRank = allBGStandings.findIndex(p=>p.name===PLAYER_NAME)+1;
+    const myPodiums = myBG.filter(r=>{const e=r.players.find(p=>p.name===PLAYER_NAME);return e&&e.place<=3;}).length;
+    const bgGameTitlesWon = new Set(myBGWin.map(r=>r.game)).size;
+
+    // Rival slayer
+    const rivalName = PPCU_CONFIG.PLAYER_META[PLAYER_NAME]?.rival;
+    const beatRival = rivalName && myWins.some(r=>r.player1===rivalName||r.player2===rivalName);
+
+    // Comeback kid — won after 3-loss streak
+    let hasComeback = false;
+    for(let i=3; i<outcomes.length; i++){
+      if(outcomes[i]==='W' && outcomes[i-1]==='L' && outcomes[i-2]==='L' && outcomes[i-3]==='L') { hasComeback=true; break; }
+    }
+
+    // Reverse sweep — lost to someone ranked below
+    let hasReverseSweep = false;
+    myLoss.forEach(r => {
+      const opp = r.player1===PLAYER_NAME?r.player2:r.player1;
+      const oppRank = allMiniStandings.findIndex(p=>p.name===opp)+1;
+      if(oppRank > myRank && myRank > 0 && oppRank > 0) hasReverseSweep = true;
+    });
+
+    // Most improved — last 5 vs prev 5
+    let isMostImproved = false;
+    if(myMini.length >= 10){
+      const prev5 = outcomes.slice(-10,-5);
+      const last5 = outcomes.slice(-5);
+      const prev5W = prev5.filter(o=>o==='W').length;
+      const last5W = last5.filter(o=>o==='W').length;
+      isMostImproved = last5W - prev5W >= 2;
+    }
+
+    // Perfect session — won a board game with all 7 players present
+    const hasPerfectSession = myBGWin.some(r=>r.players.length >= 7);
+
+    const BADGES = [
+      // Combat
+      { icon:'⚔',  name:'First Blood',        desc:'Win your first miniatures match',         earned: myWins.length >= 1 },
+      { icon:'🔥',  name:'On Fire',             desc:'Current win streak of 3+',                earned: curType==='W' && curStreak >= 3 },
+      { icon:'💀',  name:'Unstoppable',         desc:'Win streak of 5+ in a row',               earned: maxWinStreak >= 5 },
+      { icon:'👑',  name:'Warlord',             desc:'Win streak of 10+ in a row',              earned: maxWinStreak >= 10 },
+      { icon:'🎯',  name:'Sharpshooter',        desc:'60%+ win rate (min 5 games)',             earned: myMini.length >= 5 && winPct >= 0.6 },
+      { icon:'🏆',  name:'Battle Champion',     desc:'Most miniatures wins all-time',           earned: myRank === 1 && myWins.length > 0 },
+      { icon:'💪',  name:'Veteran',             desc:'10+ miniatures matches played',           earned: myMini.length >= 10 },
+      { icon:'⚡',  name:'Dominant',            desc:'Won by 10+ points in a single match',     earned: biggestMargin >= 10 },
+      { icon:'🩸',  name:'Giant Slayer',        desc:'Beat the current #1 ranked player',       earned: beatLeader },
+      { icon:'😤',  name:'Nemesis',             desc:'Beat the same opponent 3+ times',         earned: hasNemesis },
+      // Board Games
+      { icon:'🎲',  name:'Board Champion',      desc:'Most board game wins all-time',           earned: myBGRank === 1 && myBGWin.length > 0 },
+      { icon:'🥇',  name:'Podium Regular',      desc:'Top 3 finishes in 5+ board games',        earned: myPodiums >= 5 },
+      { icon:'🃏',  name:'Table Controller',    desc:'Won 3+ different board game titles',      earned: bgGameTitlesWon >= 3 },
+      { icon:'🎳',  name:'Perfect Session',     desc:'Won a full 7-player board game session',  earned: hasPerfectSession },
+      // Cross-division
+      { icon:'🌐',  name:'All-Rounder',         desc:'At least 1 win in both divisions',        earned: myWins.length >= 1 && myBGWin.length >= 1 },
+      { icon:'⚖',  name:'Double Threat',       desc:'Top 3 in both division standings',        earned: myRank <= 3 && myBGRank <= 3 && myRank > 0 && myBGRank > 0 },
+      { icon:'📈',  name:'Most Improved',       desc:'Win rate up 2+ wins in last 5 vs prev 5', earned: isMostImproved },
+      // Notorious
+      { icon:'😬',  name:'Participation Trophy',desc:'10+ games played, win rate under 30%',    earned: myMini.length >= 10 && winPct < 0.3 },
+      { icon:'📉',  name:'The Slide',           desc:'Currently on a 3-game losing streak',     earned: curType==='L' && curStreak >= 3 },
+      { icon:'🤝',  name:'Rival Slayer',        desc:'Beat your designated rival',              earned: beatRival },
+      { icon:'🙈',  name:'Reverse Sweep',       desc:'Lost to a lower-ranked opponent',         earned: hasReverseSweep },
+      { icon:'🎭',  name:'Comeback Kid',        desc:'Won after losing 3 in a row',             earned: hasComeback },
+    ];
+
+    const earned = BADGES.filter(b=>b.earned).length;
+    const countEl = document.getElementById('badge-count');
+    if(countEl) countEl.textContent = earned + ' / ' + BADGES.length + ' Unlocked';
+
+    const grid = document.getElementById('badge-grid');
+    if(!grid) return;
+
+    // Show earned first, then locked
+    const sorted = [...BADGES.filter(b=>b.earned), ...BADGES.filter(b=>!b.earned)];
+    grid.innerHTML = sorted.map(b => `
+      <div class="badge ${b.earned?'earned':'locked'}">
+        <div class="badge-icon">${b.icon}</div>
+        <div class="badge-info">
+          <div class="badge-name">${b.name}</div>
+          <div class="badge-desc">${b.desc}</div>
+        </div>
+      </div>`).join('');
+  })();
 
 }
 init();
