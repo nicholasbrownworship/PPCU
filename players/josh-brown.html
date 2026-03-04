@@ -112,6 +112,17 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
 .rival-record{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--muted);margin-top:.6rem;letter-spacing:.08em}
 .rival-record span{color:var(--ember-bright)}
 
+
+/* BIO + FACTS CARD */
+.profile-card{border:1px solid rgba(201,148,15,.18);background:linear-gradient(145deg,#0d0b01,#080700);padding:2rem;margin-bottom:4rem;position:relative;overflow:hidden}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.profile-bio{font-size:1.05rem;font-style:italic;color:var(--silver);line-height:1.7;margin-bottom:1.8rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(201,148,15,.1)}
+.profile-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem}
+.fact{display:flex;flex-direction:column;gap:.3rem}
+.fact-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.24em;color:var(--gold);text-transform:uppercase}
+.fact-value{font-family:'Cinzel',serif;font-size:.88rem;color:var(--white)}
+.fact-value.placeholder{color:var(--muted);font-style:italic}
+
 </style>
 </head>
 <body>
@@ -164,6 +175,16 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
 
 <div class="content">
 
+
+
+  <div class="profile-card" id="profile-card">
+    <div class="profile-bio" id="profile-bio"></div>
+    <div class="profile-facts">
+      <div class="fact"><div class="fact-label">Army / Faction</div><div class="fact-value" id="fact-army">—</div></div>
+      <div class="fact"><div class="fact-label">Signature Game</div><div class="fact-value" id="fact-sig">—</div></div>
+      <div class="fact"><div class="fact-label">Excuses Per Loss</div><div class="fact-value" id="fact-excuses">—</div></div>
+    </div>
+  </div>
 
   <div class="rival-section">
     <div class="s-hdr"><h2>Designated Rival</h2><span class="s-tag">Personal Nemesis</span></div>
