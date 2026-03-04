@@ -64,6 +64,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .meta-item span{color:var(--silver);display:block;font-size:.82rem;margin-top:.2rem;text-transform:none;letter-spacing:0;font-style:italic}
 
 /* STANDINGS PREVIEW */
+.lb-dual{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media(max-width:860px){.lb-dual{grid-template-columns:1fr}}
 .lb-preview{max-width:1100px;margin:3rem auto 0;padding:0 2rem}
 .lb-inner{border:1px solid rgba(201,148,15,.12);background:rgba(255,255,255,.015)}
 .lb-head{padding:1.5rem 2rem;border-bottom:1px solid rgba(201,148,15,.1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
@@ -179,8 +181,9 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
   <div class="stat-strip-inner">
     <div><div class="stat-num">7</div><div class="stat-lbl">Active Warriors</div></div>
     <div><div class="stat-num" id="s-matches">—</div><div class="stat-lbl">Mini Matches</div></div>
-    <div><div class="stat-num" id="s-games">—</div><div class="stat-lbl">Board Games</div></div>
-    <div><div class="stat-num" id="s-leader">—</div><div class="stat-lbl">Overall Leader</div></div>
+    <div><div class="stat-num" id="s-games">—</div><div class="stat-lbl">Board Sessions</div></div>
+    <div><div class="stat-num" id="s-mini-leader">—</div><div class="stat-lbl">Mini Leader</div></div>
+    <div><div class="stat-num" id="s-board-leader">—</div><div class="stat-lbl">Board Leader</div></div>
   </div>
 </div>
 
@@ -193,16 +196,31 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
 </div>
 
 <div class="lb-preview">
-  <div class="lb-inner">
-    <div class="lb-head">
-      <h3>Current Standings</h3>
-      <span class="live-label"><span class="live-dot"></span>Live</span>
+  <div class="lb-dual">
+    <!-- BATTLE DIVISION -->
+    <div class="lb-inner">
+      <div class="lb-head">
+        <h3>⚔ Battle Division</h3>
+        <span class="live-label"><span class="live-dot"></span>Live</span>
+      </div>
+      <div class="lb-cols">
+        <span>#</span><span>Warrior</span><span>W</span><span>L</span><span style="text-align:right">Streak</span>
+      </div>
+      <div id="mini-standings-list"><div class="loading">Loading…</div></div>
+      <a href="battle-division.html" class="view-all">Full Standings →</a>
     </div>
-    <div class="lb-cols">
-      <span>#</span><span>Warrior</span><span>Wins</span><span>⚔/🎲</span><span>Played</span><span style="text-align:right">Streak</span>
+    <!-- THE CABINET -->
+    <div class="lb-inner">
+      <div class="lb-head">
+        <h3>🎲 The Cabinet</h3>
+        <span class="live-label"><span class="live-dot"></span>Live</span>
+      </div>
+      <div class="lb-cols">
+        <span>#</span><span>Warrior</span><span>Wins</span><span>Played</span><span style="text-align:right">Podiums</span>
+      </div>
+      <div id="board-standings-list"><div class="loading">Loading…</div></div>
+      <a href="cabinet.html" class="view-all">Full Standings →</a>
     </div>
-    <div id="standings-list"><div class="loading">Loading standings…</div></div>
-    <a href="battle-division.html" class="view-all">View Full Standings →</a>
   </div>
 </div>
 
@@ -238,86 +256,87 @@ const INITIALS={"Nick Brown":"NB","Katelyn Brown":"KB","Josh Burchfield":"JBu","
 const TITLES={"Nick Brown":"The Architect","Katelyn Brown":"The Relentless","Josh Burchfield":"The Grinder","Josh Brown":"The Quiet Storm","Corey Jackson":"The Enforcer","Spencer Hinrichs":"The Strategist","Carson Hinrichs":"The Prodigy"};
 
 async function init(){
-  const [results, bgResults]=await Promise.all([
+  const [results, bgResults] = await Promise.all([
     PPCUData.fetchResults(),
     PPCUData.fetchBoardGames()
   ]);
-  const standings=PPCUData.buildStandings(results);
-  const bgStandings=PPCUData.buildBoardGameStandings(bgResults);
+  const miniStandings = PPCUData.buildStandings(results);
+  const bgStandings   = PPCUData.buildBoardGameStandings(bgResults);
 
-  // Stats strip — mini matches + board game sessions
-  document.getElementById('s-matches').textContent=results.length||'0';
-  document.getElementById('s-games').textContent=bgResults.length||'0';
-
-  // Overall leader: combined wins across both categories
-  const combined={};
-  PPCU_CONFIG.PLAYERS.forEach(p=>{combined[p]=0;});
-  standings.forEach(p=>{combined[p.name]=(combined[p.name]||0)+p.w;});
-  bgStandings.forEach(p=>{combined[p.name]=(combined[p.name]||0)+p.wins;});
-  const overallLeader=Object.entries(combined).sort((a,b)=>b[1]-a[1])[0];
-  if(overallLeader&&overallLeader[1]>0){
-    const slug=SLUGS[overallLeader[0]];
-    document.getElementById('s-leader').innerHTML=slug
-      ?'<a href="players/'+slug+'.html" style="color:inherit;text-decoration:none">'+overallLeader[0].split(' ')[0]+'</a>'
-      :overallLeader[0].split(' ')[0];
+  // Stat strip
+  document.getElementById('s-matches').textContent = results.length || '0';
+  document.getElementById('s-games').textContent   = bgResults.length || '0';
+  const miniLeader  = miniStandings.find(p => p.w > 0);
+  const boardLeader = bgStandings.find(p => p.wins > 0);
+  if(miniLeader){
+    const s = SLUGS[miniLeader.name];
+    document.getElementById('s-mini-leader').innerHTML =
+      '<a href="players/'+s+'.html" style="color:inherit;text-decoration:none">'+miniLeader.name.split(' ')[0]+'</a>';
+  }
+  if(boardLeader){
+    const s = SLUGS[boardLeader.name];
+    document.getElementById('s-board-leader').innerHTML =
+      '<a href="players/'+s+'.html" style="color:inherit;text-decoration:none">'+boardLeader.name.split(' ')[0]+'</a>';
   }
 
-  // Last result
-  const recent=PPCUData.recentResults(results,1);
-  if(recent.length>0){
-    const r=recent[0];
-    const loser=r.winner===r.player1?r.player2:r.player1;
-    const ws=r.winner===r.player1?r.p1score:r.p2score;
-    const ls=r.winner===r.player1?r.p2score:r.p1score;
-    document.getElementById('last-result-wrap').style.display='block';
-    document.getElementById('last-matchup').innerHTML=`
-      <div class="result-player"><div class="rp-name">${r.winner}</div><div class="rp-score win">${ws}</div></div>
-      <div class="result-vs">VS</div>
-      <div class="result-player"><div class="rp-name">${loser}</div><div class="rp-score loss">${ls}</div></div>`;
-    document.getElementById('last-meta').innerHTML=`
-      <div class="meta-item">Game<span>${r.game}</span></div>
-      <div class="meta-item">Date<span>${r.date}</span></div>
-      <div class="meta-item">Winner<span>${r.winner}</span></div>`;
+  // Most recent miniatures result
+  const recent = PPCUData.recentResults(results, 1);
+  if(recent.length > 0){
+    const r = recent[0];
+    const loser = r.winner === r.player1 ? r.player2 : r.player1;
+    const ws = r.winner === r.player1 ? r.p1score : r.p2score;
+    const ls = r.winner === r.player1 ? r.p2score : r.p1score;
+    document.getElementById('last-result-wrap').style.display = '';
+    document.getElementById('last-matchup').textContent = r.winner + ' def. ' + loser + ' (' + ws + '–' + ls + ')';
+    document.getElementById('last-meta').innerHTML =
+      '<div class="meta-item">Game<span>'+r.game+'</span></div>' +
+      '<div class="meta-item">Date<span>'+r.date+'</span></div>' +
+      '<div class="meta-item">Winner<span>'+r.winner+'</span></div>';
   }
 
-  // Combined standings: mini wins + board game wins
-  const bgMap={};
-  bgStandings.forEach(p=>{bgMap[p.name]=p;});
-  const combinedStandings=PPCU_CONFIG.PLAYERS.map(name=>{
-    const m=standings.find(p=>p.name===name)||{w:0,l:0,streak:0,streakType:null};
-    const b=bgMap[name]||{wins:0,played:0};
-    return {name,miniW:m.w,miniL:m.l,boardW:b.wins,boardPlayed:b.played,
-            total:m.w+b.wins,streak:m.streak,streakType:m.streakType};
-  }).sort((a,b)=>b.total-a.total);
-
-  const sl=document.getElementById('standings-list');
-  if(combinedStandings.every(p=>p.total===0)){
-    sl.innerHTML='<div class="loading" style="animation:none;color:var(--muted)">No results yet</div>';
+  // Battle Division standings preview
+  const miniList = document.getElementById('mini-standings-list');
+  if(miniStandings.every(p => p.w + p.l === 0)){
+    miniList.innerHTML = '<div class="loading" style="animation:none;color:var(--muted)">No results yet</div>';
   } else {
-    sl.innerHTML=combinedStandings.map((p,i)=>`
+    miniList.innerHTML = miniStandings.map((p,i) => `
       <div class="lb-row">
         <span class="lb-num ${i<3?'gold':''}">${i+1}</span>
         <span class="lb-name"><a href="players/${SLUGS[p.name]}.html" style="color:inherit;text-decoration:none">${p.name}</a></span>
-        <span class="lb-stat hi">${p.total}</span>
-        <span class="lb-stat" style="font-size:.72rem">${p.miniW}⚔ ${p.boardW}🎲</span>
-        <span class="lb-pct">${p.miniW+p.miniL+p.boardPlayed||'—'}</span>
+        <span class="lb-stat hi">${p.w}</span>
+        <span class="lb-stat">${p.l}</span>
         <span class="lb-streak ${p.streakType==='W'?'sw':p.streakType==='L'?'sl':''}">${PPCUData.formatStreak(p.streak,p.streakType)}</span>
       </div>`).join('');
   }
 
-  // Roster
-  const statsMap={};standings.forEach(p=>{statsMap[p.name]=p});
-  document.getElementById('roster-grid').innerHTML=PPCU_CONFIG.PLAYERS.map(name=>{
-    const s=statsMap[name]||{w:0,l:0};
+  // Cabinet standings preview
+  const boardList = document.getElementById('board-standings-list');
+  if(bgStandings.every(p => p.played === 0)){
+    boardList.innerHTML = '<div class="loading" style="animation:none;color:var(--muted)">No results yet</div>';
+  } else {
+    boardList.innerHTML = bgStandings.map((p,i) => `
+      <div class="lb-row">
+        <span class="lb-num ${i<3?'gold':''}">${i+1}</span>
+        <span class="lb-name"><a href="players/${SLUGS[p.name]}.html" style="color:inherit;text-decoration:none">${p.name}</a></span>
+        <span class="lb-stat hi">${p.wins}</span>
+        <span class="lb-stat">${p.played}</span>
+        <span class="lb-streak">${p.podiums}</span>
+      </div>`).join('');
+  }
+
+  // Roster with mini record
+  const statsMap = {};
+  miniStandings.forEach(p => { statsMap[p.name] = p; });
+  document.getElementById('roster-grid').innerHTML = PPCU_CONFIG.PLAYERS.map(name => {
+    const s = statsMap[name] || {w:0, l:0};
     return `<a href="players/${SLUGS[name]}.html" class="warrior" style="text-decoration:none;display:block">
       <div class="warrior-init">${INITIALS[name]||name.substring(0,2)}</div>
       <div class="warrior-name">${name}</div>
       <div class="warrior-record">${s.w}W – ${s.l}L</div>
-    </div>`;
+    </a>`;
   }).join('');
 }
 init();
 </script>
 </body>
 </html>
-
