@@ -195,7 +195,7 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
 
   <div class="qs-grid">
     <div class="qs-box"><div class="qs-label">All-Time Leader</div><div class="qs-val" id="qs-leader">—</div><div class="qs-note">Most wins</div></div>
-    <div class="qs-box"><div class="qs-label">Total Matches</div><div class="qs-val" id="qs-matches">—</div><div class="qs-note">All-time</div></div>
+    <div class="qs-box"><div class="qs-label">Total Matches</div><div class="qs-val" id="qs-matches">—</div><div class="qs-note">Mini + Board</div></div>
     <div class="qs-box"><div class="qs-label">Highest Win%</div><div class="qs-val" id="qs-pct">—</div><div class="qs-note">Min 3 matches</div></div>
     <div class="qs-box"><div class="qs-label">Longest Streak</div><div class="qs-val" id="qs-streak">—</div><div class="qs-note">All-time record</div></div>
   </div>
@@ -278,53 +278,78 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
 const SLUGS={"Nick Brown":"nick-brown","Katelyn Brown":"katelyn-brown","Josh Burchfield":"josh-burchfield","Josh Brown":"josh-brown","Corey Jackson":"corey-jackson","Spencer Hinrichs":"spencer-hinrichs","Carson Hinrichs":"carson-hinrichs"};
 function playerLink(name){const s=SLUGS[name];return s?`<a href="players/${s}.html" style="color:inherit;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color=''">${name}</a>`:name;}
 async function init(){
-  const results = await PPCUData.fetchResults();
-  const standings = PPCUData.buildStandings(results);
+  const [results, bgResults] = await Promise.all([
+    PPCUData.fetchResults(),
+    PPCUData.fetchBoardGames()
+  ]);
+  const miniStandings = PPCUData.buildStandings(results);
+  const bgStandings   = PPCUData.buildBoardGameStandings(bgResults);
+
+  // Build combined standings
+  const bgMap = {};
+  bgStandings.forEach(p => { bgMap[p.name] = p; });
+  const combined = PPCU_CONFIG.PLAYERS.map(name => {
+    const m = miniStandings.find(p => p.name === name) || {w:0, l:0, streak:0, streakType:null};
+    const b = bgMap[name] || {wins:0, played:0, podiums:0};
+    return {
+      name,
+      miniW: m.w, miniL: m.l,
+      boardW: b.wins, boardPlayed: b.played,
+      total: m.w + b.wins,
+      streak: m.streak, streakType: m.streakType
+    };
+  }).sort((a, b) => b.total - a.total);
 
   // Quick stats
-  document.getElementById('qs-matches').textContent = results.length || '0';
-  if(standings.length > 0 && standings[0].w > 0){
-    document.getElementById('qs-leader').innerHTML = `<a href="players/${SLUGS[standings[0].name]}.html" style="color:inherit;text-decoration:none">${standings[0].name.split(' ')[0]}</a>`;
+  const totalMatches = results.length + bgResults.length;
+  document.getElementById('qs-matches').textContent = totalMatches || '0';
+
+  if(combined.length > 0 && combined[0].total > 0){
+    document.getElementById('qs-leader').innerHTML =
+      '<a href="players/' + SLUGS[combined[0].name] + '.html" style="color:inherit;text-decoration:none">' +
+      combined[0].name.split(' ')[0] + '</a>';
   }
-  // Best win pct (min 3 matches)
-  const qualified = standings.filter(p => p.w + p.l >= 3);
+
+  // Best mini win% (min 3 matches)
+  const qualified = miniStandings.filter(p => p.w + p.l >= 3);
   if(qualified.length > 0){
-    const best = qualified[0];
-    document.getElementById('qs-pct').textContent = PPCUData.winPct(best.w, best.l);
+    document.getElementById('qs-pct').textContent = PPCUData.winPct(qualified[0].w, qualified[0].l);
   }
-  // Longest streak (all-time, scan all players)
+
+  // Longest current streak
   let maxStreak = 0;
-  standings.forEach(p => { if(p.streak > maxStreak) maxStreak = p.streak; });
+  miniStandings.forEach(p => { if(p.streak > maxStreak) maxStreak = p.streak; });
   document.getElementById('qs-streak').textContent = maxStreak || '—';
 
-  // Podium
-  if(standings.length >= 1 && standings[0].w > 0){
-    document.getElementById('pod-1').innerHTML = playerLink(standings[0].name);
-    document.getElementById('pod-1-stat').textContent = standings[0].w + 'W – ' + standings[0].l + 'L';
+  // Podium — based on combined wins
+  if(combined.length >= 1 && combined[0].total > 0){
+    document.getElementById('pod-1').innerHTML = playerLink(combined[0].name);
+    document.getElementById('pod-1-stat').textContent =
+      combined[0].miniW + '⚔ ' + combined[0].boardW + '🎲 — ' + combined[0].total + ' total wins';
   }
-  if(standings.length >= 2 && standings[1].w > 0){
-    document.getElementById('pod-2').innerHTML = playerLink(standings[1].name);
-    document.getElementById('pod-2-stat').textContent = standings[1].w + 'W – ' + standings[1].l + 'L';
+  if(combined.length >= 2 && combined[1].total > 0){
+    document.getElementById('pod-2').innerHTML = playerLink(combined[1].name);
+    document.getElementById('pod-2-stat').textContent =
+      combined[1].miniW + '⚔ ' + combined[1].boardW + '🎲 — ' + combined[1].total + ' total wins';
   }
-  if(standings.length >= 3 && standings[2].w > 0){
-    document.getElementById('pod-3').innerHTML = playerLink(standings[2].name);
-    document.getElementById('pod-3-stat').textContent = standings[2].w + 'W – ' + standings[2].l + 'L';
+  if(combined.length >= 3 && combined[2].total > 0){
+    document.getElementById('pod-3').innerHTML = playerLink(combined[2].name);
+    document.getElementById('pod-3-stat').textContent =
+      combined[2].miniW + '⚔ ' + combined[2].boardW + '🎲 — ' + combined[2].total + ' total wins';
   }
 
-  // Warriors table
+  // Warriors table — combined view
   const tbody = document.getElementById('warriors-tbody');
   if(!tbody) return;
-  tbody.innerHTML = standings.map((p, i) => {
-    const allGames = results.filter(r => r.player1 === p.name || r.player2 === p.name);
-    const bestGame = PPCUData.mostPlayedGame(allGames.map(r => ({game: r.game})));
-    return \`<tr>
-      <td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:\${i<3?'var(--gold)':'var(--muted)'};width:50px">\${i+1}</td>
-      <td class="td-name">${playerLink(p.name)}</td>
-      <td class="td-stat hi">\${p.w}</td>
-      <td class="td-stat">\${p.l}</td>
-      <td class="td-stat">\${PPCUData.winPct(p.w, p.l)}</td>
-      <td><span class="chip">\${PPCUData.formatStreak(p.streak, p.streakType) || 'Active'}</span></td>
-    </tr>\`;
+  tbody.innerHTML = combined.map((p, i) => {
+    return '<tr>' +
+      '<td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:' + (i<3?'var(--gold)':'var(--muted)') + ';width:50px">' + (i+1) + '</td>' +
+      '<td class="td-name">' + playerLink(p.name) + '</td>' +
+      '<td class="td-stat hi">' + p.total + '</td>' +
+      '<td class="td-stat" style="font-size:.78rem">' + p.miniW + '⚔ / ' + p.boardW + '🎲</td>' +
+      '<td class="td-stat">' + PPCUData.winPct(p.miniW, p.miniW + p.miniL) + '</td>' +
+      '<td><span class="chip">' + (PPCUData.formatStreak(p.streak, p.streakType) || '—') + '</span></td>' +
+    '</tr>';
   }).join('');
 }
 init();
