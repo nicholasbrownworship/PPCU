@@ -95,6 +95,23 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
   .match-row,.match-row-head{grid-template-columns:80px 1fr 60px 60px}
   .match-row>*:nth-child(3),.match-row-head>*:nth-child(3){display:none}
 }
+
+/* RIVAL CARD */
+.rival-section{margin-bottom:4rem}
+.rival-card{border:1px solid rgba(192,57,43,.35);background:linear-gradient(135deg,rgba(192,57,43,.07),rgba(6,6,8,.9));padding:2rem;position:relative;overflow:hidden}
+.rival-card::before{content:'RIVAL';position:absolute;top:50%;right:1.5rem;transform:translateY(-50%);font-family:'Bebas Neue',sans-serif;font-size:5rem;color:rgba(192,57,43,.07);line-height:1;pointer-events:none}
+.rival-eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;color:var(--ember-bright);text-transform:uppercase;margin-bottom:.8rem}
+.rival-inner{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.rival-initials{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:900;background:linear-gradient(135deg,var(--ember-bright),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0;width:60px;text-align:center}
+.rival-info{flex:1}
+.rival-name{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:.2rem}
+.rival-name a{color:inherit;text-decoration:none;transition:color .2s}
+.rival-name a:hover{color:var(--ember-bright)}
+.rival-title-txt{font-size:.82rem;font-style:italic;color:var(--silver);margin-bottom:.6rem}
+.rival-taunt{font-size:.95rem;font-style:italic;color:var(--silver);border-left:2px solid var(--ember);padding-left:.8rem;line-height:1.5}
+.rival-record{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--muted);margin-top:.6rem;letter-spacing:.08em}
+.rival-record span{color:var(--ember-bright)}
+
 </style>
 </head>
 <body>
@@ -241,6 +258,33 @@ async function init() {
       </div>`;
     }).join('');
   }
+
+  // ── Rival card ──────────────────────────────────────────────
+  const _meta = PPCU_CONFIG.PLAYER_META[PLAYER_NAME];
+  const _rivalName = _meta && _meta.rival;
+  const _rivalMeta = _rivalName ? PPCU_CONFIG.PLAYER_META[_rivalName] : null;
+  if (_rivalMeta) {
+    document.getElementById('rival-initials').textContent = _rivalMeta.initials;
+    document.getElementById('rival-name').innerHTML = '<a href="../players/' + _rivalMeta.slug + '.html">' + _rivalName + '</a>';
+    document.getElementById('rival-title').textContent = _rivalMeta.title;
+    document.getElementById('rival-taunt').textContent = (_meta && _meta.taunt) ? _meta.taunt : '—';
+    const h2h = results.filter(function(r){
+      return (r.player1 === PLAYER_NAME && r.player2 === _rivalName) ||
+             (r.player1 === _rivalName  && r.player2 === PLAYER_NAME);
+    });
+    const _myW  = h2h.filter(function(r){ return r.winner === PLAYER_NAME; }).length;
+    const _oppW = h2h.filter(function(r){ return r.winner === _rivalName; }).length;
+    document.getElementById('rival-record').innerHTML = h2h.length > 0
+      ? 'Head-to-head: <span>' + _myW + '–' + _oppW + '</span> (' + h2h.length + ' match' + (h2h.length>1?'es':'') + ')'
+      : 'Head-to-head: <span>No matches yet</span>';
+  }
+
+  // ── Nickname in subtitle ────────────────────────────────────
+  if (_meta && _meta.nickname) {
+    var ht = document.querySelector('.hero-title');
+    if (ht) ht.textContent = _meta.nickname + ' · ' + _meta.title;
+  }
+
 }
 init();
 </script>
