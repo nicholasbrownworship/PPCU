@@ -236,6 +236,29 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
     <div class="record"><div class="record-icon">📈</div><div class="record-cat">Most Improved</div><div class="record-holder">— Holder TBD —</div><div class="record-val">—</div><div class="record-note">Season-over-season</div></div>
   </div>
 
+  <!-- CABINET PODIUM -->
+  <div class="s-hdr" style="margin-top:3rem"><h2>Cabinet Podium</h2><span class="s-tag">Board Games</span></div>
+  <div class="podium-wrap">
+    <div class="podium-slot slot-2">
+      <div class="podium-crown">🥈</div>
+      <div class="podium-name" id="bpod-2">— TBD —</div>
+      <div class="podium-stat" id="bpod-2-stat">—</div>
+      <div class="podium-block p2">2nd</div>
+    </div>
+    <div class="podium-slot slot-1">
+      <div class="podium-crown">🥇</div>
+      <div class="podium-name" id="bpod-1">— TBD —</div>
+      <div class="podium-stat" id="bpod-1-stat">—</div>
+      <div class="podium-block p1">1st</div>
+    </div>
+    <div class="podium-slot slot-3">
+      <div class="podium-crown">🥉</div>
+      <div class="podium-name" id="bpod-3">— TBD —</div>
+      <div class="podium-stat" id="bpod-3-stat">—</div>
+      <div class="podium-block p3">3rd</div>
+    </div>
+  </div>
+
   <div class="s-hdr"><h2>Season Champions</h2><span class="s-tag">Title History</span></div>
   <table class="tbl">
     <thead>
@@ -248,15 +271,22 @@ footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,
     </tbody>
   </table>
 
-  <!-- ALL WARRIORS -->
-  <div class="s-hdr"><h2>Warriors of Note</h2><span class="s-tag">Entire Roster</span></div>
+  <!-- BATTLE DIVISION TABLE -->
+  <div class="s-hdr"><h2>Battle Division Rankings</h2><span class="s-tag">Miniatures — All Time</span></div>
   <table class="tbl">
     <thead>
-      <tr><th>#</th><th>Warrior</th><th>Titles</th><th>Best Finish</th><th>Records</th><th>Status</th></tr>
+      <tr><th>#</th><th>Warrior</th><th>W</th><th>L</th><th>Win%</th><th>Streak</th></tr>
     </thead>
-    <tbody>
-      <tbody id="warriors-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;font-style:italic;color:#555568">Loading…</td></tr></tbody>
-    </tbody>
+    <tbody id="mini-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;font-style:italic;color:#555568">Loading…</td></tr></tbody>
+  </table>
+
+  <!-- CABINET TABLE -->
+  <div class="s-hdr" style="margin-top:3rem"><h2>Cabinet Rankings</h2><span class="s-tag">Board Games — All Time</span></div>
+  <table class="tbl">
+    <thead>
+      <tr><th>#</th><th>Warrior</th><th>Wins</th><th>Played</th><th>Win%</th><th>Podiums</th></tr>
+    </thead>
+    <tbody id="board-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;font-style:italic;color:#555568">Loading…</td></tr></tbody>
   </table>
 
 </div>
@@ -285,75 +315,85 @@ async function init(){
   const miniStandings = PPCUData.buildStandings(results);
   const bgStandings   = PPCUData.buildBoardGameStandings(bgResults);
 
-  // Build combined standings
-  const bgMap = {};
-  bgStandings.forEach(p => { bgMap[p.name] = p; });
-  const combined = PPCU_CONFIG.PLAYERS.map(name => {
-    const m = miniStandings.find(p => p.name === name) || {w:0, l:0, streak:0, streakType:null};
-    const b = bgMap[name] || {wins:0, played:0, podiums:0};
-    return {
-      name,
-      miniW: m.w, miniL: m.l,
-      boardW: b.wins, boardPlayed: b.played,
-      total: m.w + b.wins,
-      streak: m.streak, streakType: m.streakType
-    };
-  }).sort((a, b) => b.total - a.total);
+  // Quick stats — mini focused
+  document.getElementById('qs-matches').textContent = results.length || '0';
 
-  // Quick stats
-  const totalMatches = results.length + bgResults.length;
-  document.getElementById('qs-matches').textContent = totalMatches || '0';
-
-  if(combined.length > 0 && combined[0].total > 0){
+  const miniLeader = miniStandings.find(p => p.w > 0);
+  if(miniLeader){
     document.getElementById('qs-leader').innerHTML =
-      '<a href="players/' + SLUGS[combined[0].name] + '.html" style="color:inherit;text-decoration:none">' +
-      combined[0].name.split(' ')[0] + '</a>';
+      '<a href="players/'+SLUGS[miniLeader.name]+'.html" style="color:inherit;text-decoration:none">'+miniLeader.name.split(' ')[0]+'</a>';
   }
-
-  // Best mini win% (min 3 matches)
   const qualified = miniStandings.filter(p => p.w + p.l >= 3);
   if(qualified.length > 0){
     document.getElementById('qs-pct').textContent = PPCUData.winPct(qualified[0].w, qualified[0].l);
   }
-
-  // Longest current streak
   let maxStreak = 0;
   miniStandings.forEach(p => { if(p.streak > maxStreak) maxStreak = p.streak; });
   document.getElementById('qs-streak').textContent = maxStreak || '—';
 
-  // Podium — based on combined wins
-  if(combined.length >= 1 && combined[0].total > 0){
-    document.getElementById('pod-1').innerHTML = playerLink(combined[0].name);
-    document.getElementById('pod-1-stat').textContent =
-      combined[0].miniW + '⚔ ' + combined[0].boardW + '🎲 — ' + combined[0].total + ' total wins';
+  // Battle Division podium
+  if(miniStandings.length >= 1 && miniStandings[0].w > 0){
+    document.getElementById('pod-1').innerHTML = playerLink(miniStandings[0].name);
+    document.getElementById('pod-1-stat').textContent = miniStandings[0].w + 'W – ' + miniStandings[0].l + 'L';
   }
-  if(combined.length >= 2 && combined[1].total > 0){
-    document.getElementById('pod-2').innerHTML = playerLink(combined[1].name);
-    document.getElementById('pod-2-stat').textContent =
-      combined[1].miniW + '⚔ ' + combined[1].boardW + '🎲 — ' + combined[1].total + ' total wins';
+  if(miniStandings.length >= 2 && miniStandings[1].w > 0){
+    document.getElementById('pod-2').innerHTML = playerLink(miniStandings[1].name);
+    document.getElementById('pod-2-stat').textContent = miniStandings[1].w + 'W – ' + miniStandings[1].l + 'L';
   }
-  if(combined.length >= 3 && combined[2].total > 0){
-    document.getElementById('pod-3').innerHTML = playerLink(combined[2].name);
-    document.getElementById('pod-3-stat').textContent =
-      combined[2].miniW + '⚔ ' + combined[2].boardW + '🎲 — ' + combined[2].total + ' total wins';
+  if(miniStandings.length >= 3 && miniStandings[2].w > 0){
+    document.getElementById('pod-3').innerHTML = playerLink(miniStandings[2].name);
+    document.getElementById('pod-3-stat').textContent = miniStandings[2].w + 'W – ' + miniStandings[2].l + 'L';
   }
 
-  // Warriors table — combined view
-  const tbody = document.getElementById('warriors-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = combined.map((p, i) => {
-    return '<tr>' +
-      '<td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:' + (i<3?'var(--gold)':'var(--muted)') + ';width:50px">' + (i+1) + '</td>' +
-      '<td class="td-name">' + playerLink(p.name) + '</td>' +
-      '<td class="td-stat hi">' + p.total + '</td>' +
-      '<td class="td-stat" style="font-size:.78rem">' + p.miniW + '⚔ / ' + p.boardW + '🎲</td>' +
-      '<td class="td-stat">' + PPCUData.winPct(p.miniW, p.miniW + p.miniL) + '</td>' +
-      '<td><span class="chip">' + (PPCUData.formatStreak(p.streak, p.streakType) || '—') + '</span></td>' +
-    '</tr>';
-  }).join('');
+  // Cabinet podium
+  if(bgStandings.length >= 1 && bgStandings[0].wins > 0){
+    document.getElementById('bpod-1').innerHTML = playerLink(bgStandings[0].name);
+    document.getElementById('bpod-1-stat').textContent = bgStandings[0].wins + ' wins / ' + bgStandings[0].played + ' played';
+  }
+  if(bgStandings.length >= 2 && bgStandings[1].wins > 0){
+    document.getElementById('bpod-2').innerHTML = playerLink(bgStandings[1].name);
+    document.getElementById('bpod-2-stat').textContent = bgStandings[1].wins + ' wins / ' + bgStandings[1].played + ' played';
+  }
+  if(bgStandings.length >= 3 && bgStandings[2].wins > 0){
+    document.getElementById('bpod-3').innerHTML = playerLink(bgStandings[2].name);
+    document.getElementById('bpod-3-stat').textContent = bgStandings[2].wins + ' wins / ' + bgStandings[2].played + ' played';
+  }
+
+  // Battle Division table
+  const miniTbody = document.getElementById('mini-tbody');
+  if(miniStandings.every(p => p.w + p.l === 0)){
+    miniTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;font-style:italic;color:var(--muted)">No results yet</td></tr>';
+  } else {
+    miniTbody.innerHTML = miniStandings.map((p,i) =>
+      '<tr>' +
+      '<td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:'+(i<3?'var(--gold)':'var(--muted)')+';width:50px">'+(i+1)+'</td>' +
+      '<td class="td-name">'+playerLink(p.name)+'</td>' +
+      '<td class="td-stat hi">'+p.w+'</td>' +
+      '<td class="td-stat">'+p.l+'</td>' +
+      '<td class="td-stat">'+PPCUData.winPct(p.w, p.w+p.l)+'</td>' +
+      '<td><span class="chip">'+(PPCUData.formatStreak(p.streak,p.streakType)||'—')+'</span></td>' +
+      '</tr>'
+    ).join('');
+  }
+
+  // Cabinet table
+  const boardTbody = document.getElementById('board-tbody');
+  if(bgStandings.every(p => p.played === 0)){
+    boardTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;font-style:italic;color:var(--muted)">No results yet</td></tr>';
+  } else {
+    boardTbody.innerHTML = bgStandings.map((p,i) =>
+      '<tr>' +
+      '<td style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:'+(i<3?'var(--gold)':'var(--muted)')+';width:50px">'+(i+1)+'</td>' +
+      '<td class="td-name">'+playerLink(p.name)+'</td>' +
+      '<td class="td-stat hi">'+p.wins+'</td>' +
+      '<td class="td-stat">'+p.played+'</td>' +
+      '<td class="td-stat">'+PPCUData.winPct(p.wins,p.played)+'</td>' +
+      '<td class="td-stat">'+p.podiums+'</td>' +
+      '</tr>'
+    ).join('');
+  }
 }
 init();
 </script>
 </body>
 </html>
-
