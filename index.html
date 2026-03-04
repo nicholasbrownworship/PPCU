@@ -150,7 +150,6 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
     <li><a href="battle-division.html">Battle Division</a></li>
     <li><a href="emberforge.html">Emberforge</a></li>
     <li><a href="cabinet.html">The Cabinet</a></li>
-    <li><a href="players.html">Players</a></li>
     <li><a href="hall-of-champions.html">Hall of Champions</a></li>
   </ul>
   <button class="hamburger" onclick="document.getElementById('mob').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -159,7 +158,6 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
   <a href="battle-division.html">⚔ Battle Division</a>
   <a href="emberforge.html">🔥 Emberforge</a>
   <a href="cabinet.html">🏛 The Cabinet</a>
-  <a href="players.html">👤 Players</a>
   <a href="hall-of-champions.html">🏆 Hall of Champions</a>
 </nav>
 
@@ -235,6 +233,7 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255
 <script src="config.js"></script>
 <script src="ppcu-data.js"></script>
 <script>
+const SLUGS={"Nick Brown":"nick-brown","Katelyn Brown":"katelyn-brown","Josh Burchfield":"josh-burchfield","Josh Brown":"josh-brown","Corey Jackson":"corey-jackson","Spencer Hinrichs":"spencer-hinrichs","Carson Hinrichs":"carson-hinrichs"};
 const INITIALS={"Nick Brown":"NB","Katelyn Brown":"KB","Josh Burchfield":"JBu","Josh Brown":"JBr","Corey Jackson":"CJ","Spencer Hinrichs":"SH","Carson Hinrichs":"CH"};
 const TITLES={"Nick Brown":"The Architect","Katelyn Brown":"The Relentless","Josh Burchfield":"The Grinder","Josh Brown":"The Quiet Storm","Corey Jackson":"The Enforcer","Spencer Hinrichs":"The Strategist","Carson Hinrichs":"The Prodigy"};
 
@@ -275,7 +274,7 @@ async function init(){
     sl.innerHTML=standings.map((p,i)=>`
       <div class="lb-row">
         <span class="lb-num ${i<3?'gold':''}">${i+1}</span>
-        <span class="lb-name">${p.name}</span>
+        <span class="lb-name"><a href="players/${SLUGS[p.name]}.html" style="color:inherit;text-decoration:none">${p.name}</a></span>
         <span class="lb-stat hi">${p.w}</span>
         <span class="lb-stat">${p.l}</span>
         <span class="lb-pct">${PPCUData.winPct(p.w,p.l)}</span>
@@ -287,7 +286,7 @@ async function init(){
   const statsMap={};standings.forEach(p=>{statsMap[p.name]=p});
   document.getElementById('roster-grid').innerHTML=PPCU_CONFIG.PLAYERS.map(name=>{
     const s=statsMap[name]||{w:0,l:0};
-    return `<div class="warrior">
+    return `<a href="players/${SLUGS[name]}.html" class="warrior" style="text-decoration:none;display:block">
       <div class="warrior-init">${INITIALS[name]||name.substring(0,2)}</div>
       <div class="warrior-name">${name}</div>
       <div class="warrior-record">${s.w}W – ${s.l}L</div>
